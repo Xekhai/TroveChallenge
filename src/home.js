@@ -1,13 +1,18 @@
 import React from 'react';
-import { Divider, HStack,Text, Image, NativeBaseProvider, VStack, Button, Box} from "native-base"
+import { Divider, HStack,Text, Image, NativeBaseProvider, VStack, Button, Box, Slider} from "native-base"
 import { Heading, ChevronDownIcon } from 'native-base';
 import {StatusBar} from 'react-native'
-import { Circle, AddIcon, ScrollView, Pressable, Modal, FormControl, Input } from 'native-base';
+import { Circle, AddIcon, ScrollView, Pressable, Modal, FormControl, Input, Radio} from 'native-base';
 
 
-export default function Home() {
+export default function Home(props, { navigation }) {
 
   const [showModal, setShowModal] = React.useState(false)
+  const [showModal2, setShowModal2] = React.useState(false)
+  const [showModal3, setShowModal3] = React.useState(false)
+  const [showModal4, setShowModal4] = React.useState(false)
+  const [value, setValue] = React.useState("one")
+
 
   return (
     <NativeBaseProvider>
@@ -19,9 +24,25 @@ export default function Home() {
     <Text fontSize="sm" color='gray.500'>Good Morning,</Text>
     <Heading>Joshua Praise</Heading>
     </VStack>
+    <Pressable onPress={() => props.navigation.navigate('Settings')}>
+    {({ isPressed }) => {
+        return (
+    <Box
+     style={{
+      transform: [
+        {
+          scale: isPressed ? 0.96 : 1,
+        },
+      ],
+    }}>
     <Circle borderWidth={1} borderColor={'gray.400'} size={'sm'} bg='gray.100'>
     <ChevronDownIcon color='gray.600' size={10}/>
     </Circle>
+    </Box>
+        )
+      }}
+      </Pressable>
+  
     </HStack>
 
     <VStack space={0}>
@@ -35,7 +56,7 @@ export default function Home() {
       w='full'
     />
     <Pressable onPress={() => setShowModal(true)}>
-    {({ isHovered, isFocused, isPressed }) => {
+    {({ isHovered, isPressed }) => {
         return (
     <Box roundedBottom='xl' w='full' shadow={2} p={2} 
     bg={isPressed ? "teal.900" : isHovered ? "teal.800" : "teal.500"}
@@ -61,7 +82,17 @@ export default function Home() {
     </Pressable>
     </VStack>
 
-    <Box rounded='xl' w='full' shadow={2} p={2} bg='white'>
+    <Pressable onPress={() => props.navigation.navigate('Portfolio')}>
+    {({ isPressed }) => {
+        return (
+    <Box rounded='xl' w='full' shadow={2} p={2} bg='white'
+    style={{
+      transform: [
+        {
+          scale: isPressed ? 0.96 : 1,
+        },
+      ],
+    }}>
     <HStack space={4} justifyContent='space-between' alignItems='center'>
     <Image
     rounded='full'
@@ -77,6 +108,9 @@ export default function Home() {
     </VStack>
     </HStack>
     </Box>
+    )
+    }}
+    </Pressable>
 
     <VStack space={0}>    
     <Text fontSize="xs" color='gray.500'>Loans</Text>
@@ -84,6 +118,8 @@ export default function Home() {
     </VStack>
 
     <HStack space={0} justifyContent='space-between' alignItems='center'>
+
+    <Pressable onPress={() => setShowModal2(true)}>
     <VStack space={2} alignItems='center'>    
     <Image
     rounded='full'
@@ -95,6 +131,9 @@ export default function Home() {
     />
     <Text fontSize="xs" color='gray.500'>Request</Text>
     </VStack>
+    </Pressable>
+
+    <Pressable onPress={() => setShowModal3(true)}>
     <VStack space={2} alignItems='center'>    
     <Image
     rounded='full'
@@ -106,6 +145,9 @@ export default function Home() {
     />
     <Text fontSize="xs" color='gray.500'>Pay</Text>
     </VStack>
+    </Pressable>
+
+    <Pressable onPress={() => setShowModal4(true)}>
     <VStack space={2} alignItems='center'>    
     <Image
     rounded='full'
@@ -117,6 +159,8 @@ export default function Home() {
     />
     <Text fontSize="xs" color='gray.500'>Manage</Text>
     </VStack>
+    </Pressable>
+
     </HStack>
 
 
@@ -154,7 +198,11 @@ export default function Home() {
           <Modal.Body>
             <FormControl>
               <FormControl.Label>Amount</FormControl.Label>
-              <Input keyboardType='numeric' />
+              <Input keyboardType='numeric' placeholder='0.00' InputLeftElement={
+                (
+                  <Text ml={2}>$</Text>
+                )
+              }/>
             </FormControl>
           </Modal.Body>
           <Modal.Footer>
@@ -179,6 +227,146 @@ export default function Home() {
           </Modal.Footer>
         </Modal.Content>
       </Modal>
+
+    <Modal isOpen={showModal2} onClose={() => setShowModal2(false)}>
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header>Request Loan</Modal.Header>
+          <Modal.Body>
+          <Text fontSize="sm" color='gray.500'>Available Credit</Text>
+          <Heading>$78,000</Heading>
+          <Divider my={2}/>
+            <FormControl>
+              <FormControl.Label>Amount</FormControl.Label>
+              <Input keyboardType='numeric' placeholder='0.00' InputLeftElement={
+                (
+                  <Text ml={2}>$</Text>
+                )
+              }/>
+            </FormControl>
+            
+      <Text mt={4} fontSize="sm" color='gray.500'>Duration</Text>
+      <Slider
+        defaultValue={9}
+        minValue={6}
+        maxValue={12}
+        step={1}
+        p={1}
+      >
+        <Slider.Track>
+          <Slider.FilledTrack />
+        </Slider.Track>
+        <Slider.Thumb />
+      </Slider>
+      <Heading>9 Months</Heading>
+
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="ghost"
+                colorScheme="blueGray"
+                onPress={() => {
+                  setShowModal2(false)
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onPress={() => {
+                  setShowModal2(false)
+                }}
+              >
+                Proceed
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+
+    <Modal isOpen={showModal3} onClose={() => setShowModal3(false)}>
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header>Pay Loan</Modal.Header>
+          <Modal.Body>
+            <FormControl>
+              <FormControl.Label>Amount</FormControl.Label>
+              <Radio.Group
+      name="myRadioGroup"
+      accessibilityLabel="favorite number"
+      value={value}
+      onChange={(nextValue) => {
+        setValue(nextValue)
+      }}
+    >
+      <Radio value="one" my={1}>
+        Next Due Amount
+      </Radio>
+      <Radio value="two" my={1}>
+        Total Loan
+      </Radio>
+    </Radio.Group>
+            </FormControl>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="ghost"
+                colorScheme="blueGray"
+                onPress={() => {
+                  setShowModal3(false)
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onPress={() => {
+                  setShowModal3(false)
+                }}
+              >
+                Proceed
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+
+    <Modal isOpen={showModal4} onClose={() => setShowModal4(false)}>
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header>Manage Loan</Modal.Header>
+          <Modal.Body>
+            <Text my = {2}>Current Loan Details</Text>
+            <Divider my={1}/>
+            <HStack justifyContent='space-between'>
+            <Text my = {2} color='orange.400'>Payment Date</Text>
+            <Text my = {2} color='orange.400'>Amount Due</Text>
+            </HStack>
+            <HStack justifyContent='space-between'>
+            <Text my = {2} color='teal.400'>October 29, 2021</Text>
+            <Text my = {2} color='teal.400'>$7,000</Text>
+            </HStack>
+            <HStack justifyContent='space-between'>
+            <Text my = {2} color='teal.400'>November 29, 2021</Text>
+            <Text my = {2} color='teal.400'>$7,000</Text>
+            </HStack>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="ghost"
+                colorScheme="blueGray"
+                onPress={() => {
+                  setShowModal4(false)
+                }}
+              >
+                Cancel
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+
     </NativeBaseProvider>
   );
 }
