@@ -2,8 +2,10 @@ import React from 'react';
 import { Image, HStack,Text, Box, NativeBaseProvider, VStack,Button} from "native-base"
 import { Heading } from 'native-base';
 import {StatusBar} from 'react-native'
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-export default function Init() {
+export default function Init(props, { navigation }) {
   return (
     <NativeBaseProvider>
       <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
@@ -22,7 +24,7 @@ export default function Init() {
     <Heading>Manage your Portfolio, take loans and more.</Heading>
     </HStack>
     <VStack space={3} alignItems='flex-end' w='full'>
-    <Button colorScheme='teal' onPress={() => console.log("hello world")}>Next</Button>
+    <Button colorScheme='teal' onPress={() => props.navigation.navigate('Login')}>Next</Button>
     </VStack>
     </VStack>
     </NativeBaseProvider>

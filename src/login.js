@@ -1,9 +1,9 @@
 import React from 'react';
 import { Input, HStack,Text, Image, NativeBaseProvider, VStack,Button} from "native-base"
 import { Heading } from 'native-base';
-import {StatusBar} from 'react-native'
+import {StatusBar,Pressable} from 'react-native'
 
-export default function Login() {
+export default function Login(props, { navigation }) {
   return (
     <NativeBaseProvider>
     <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
@@ -21,13 +21,14 @@ export default function Login() {
 
     <Heading>Hey,</Heading>
     <Heading>Login Now.</Heading>
+    <Pressable onPress={() => props.navigation.navigate('Signup')}>
     <Text fontSize="sm" color='gray.500'>If you are new / <Text bold>Click Here</Text></Text>
+    </Pressable>
     <Input variant="filled" placeholder="Email" />
     <Input variant="filled" placeholder="Password" />
     <Text fontSize="sm" color='gray.500'>Forgot Password? / <Text bold>Reset</Text></Text>
-    <Button onPress={() => console.log("hello world")} colorScheme='teal'>Login</Button>
+    <Button onPress={() => props.navigation.navigate('Home')} colorScheme='teal'>Login</Button>
     <VStack space={3} alignItems='center' w='full'>
-    <Text fontSize="xs" color='gray.500'>(c) 2021</Text>
     </VStack>
     </VStack>
     </NativeBaseProvider>

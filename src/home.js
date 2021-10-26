@@ -2,10 +2,13 @@ import React from 'react';
 import { Divider, HStack,Text, Image, NativeBaseProvider, VStack, Button, Box} from "native-base"
 import { Heading, ChevronDownIcon } from 'native-base';
 import {StatusBar} from 'react-native'
-import { Circle, AddIcon, ScrollView } from 'native-base';
+import { Circle, AddIcon, ScrollView, Pressable, Modal, FormControl, Input } from 'native-base';
 
 
 export default function Home() {
+
+  const [showModal, setShowModal] = React.useState(false)
+
   return (
     <NativeBaseProvider>
     <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
@@ -31,17 +34,31 @@ export default function Home() {
       size='xl'
       w='full'
     />
-    <Box roundedBottom='xl' w='full' shadow={2} p={2} bg='teal.300'>
+    <Pressable onPress={() => setShowModal(true)}>
+    {({ isHovered, isFocused, isPressed }) => {
+        return (
+    <Box roundedBottom='xl' w='full' shadow={2} p={2} 
+    bg={isPressed ? "teal.900" : isHovered ? "teal.800" : "teal.500"}
+    style={{
+      transform: [
+        {
+          scale: isPressed ? 0.99 : 1,
+        },
+      ],
+    }}>
     <HStack space={4} justifyContent='space-between' alignItems='center'>
     <VStack space={2}>    
-    <Text fontSize="xs" color='gray.500'>Account Balance</Text>
-    <Heading color='white'>$10,000</Heading>
+    <Text fontSize="xs" color='gray.300'>Account Balance</Text>
+    <Heading color='white'>$1,671,855</Heading>
     </VStack>
     <Circle borderWidth={1} borderColor={'gray.400'} size={'sm'} bg='gray.100'>
     <AddIcon color='gray.600' size={5}/>
     </Circle>
     </HStack>
     </Box>
+     )
+    }}
+    </Pressable>
     </VStack>
 
     <Box rounded='xl' w='full' shadow={2} p={2} bg='white'>
@@ -129,6 +146,39 @@ export default function Home() {
 
     </VStack>
     </ScrollView>
+
+    <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <Modal.Content maxWidth="400px">
+          <Modal.CloseButton />
+          <Modal.Header>Add Money</Modal.Header>
+          <Modal.Body>
+            <FormControl>
+              <FormControl.Label>Amount</FormControl.Label>
+              <Input keyboardType='numeric' />
+            </FormControl>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="ghost"
+                colorScheme="blueGray"
+                onPress={() => {
+                  setShowModal(false)
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onPress={() => {
+                  setShowModal(false)
+                }}
+              >
+                Proceed
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
     </NativeBaseProvider>
   );
 }

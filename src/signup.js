@@ -1,9 +1,9 @@
 import React from 'react';
 import { Input, Checkbox,Text, Image, NativeBaseProvider, VStack,Button,HStack} from "native-base"
 import { Heading } from 'native-base';
-import {StatusBar} from 'react-native'
+import {StatusBar, Pressable} from 'react-native'
 
-export default function Signup() {
+export default function Signup(props, { navigation }) {
   return (
     <NativeBaseProvider>
     <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
@@ -21,7 +21,9 @@ export default function Signup() {
 
     <Heading>Welcome,</Heading>
     <Heading>Let's get you started!.</Heading>
+    <Pressable onPress={() => props.navigation.navigate('Login')}>
     <Text fontSize="sm" color='gray.500'>Existing User? / <Text bold>Click Here</Text></Text>
+    </Pressable>
     <Input variant="filled" placeholder="Full Name" />
     <Input variant="filled" placeholder="Email" />
     <Input variant="filled" placeholder="Password" />
@@ -29,9 +31,8 @@ export default function Signup() {
     <Checkbox value="test" colorScheme='orange'/>
     <Text fontSize="xs" color='gray.500'>Subscribe to Our Daily newsletter</Text>
     </HStack>
-    <Button onPress={() => console.log("hello world")} colorScheme='teal'>Register</Button>
+    <Button onPress={() => props.navigation.navigate('Home')} colorScheme='teal'>Register</Button>
     <VStack space={3} alignItems='center' w='full'>
-    <Text fontSize="xs" color='gray.500'>(c) 2021</Text>
     </VStack>
     </VStack>
     </NativeBaseProvider>
