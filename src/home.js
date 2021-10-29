@@ -1,19 +1,123 @@
 import React from 'react';
+import  { Paystack }  from 'react-native-paystack-webview';
+
+import LoadingIndicator from './components/loadingIndicator'
 import { Divider, HStack,Text, Image, NativeBaseProvider, VStack, Button, Box, Slider} from "native-base"
 import { Heading, ChevronDownIcon } from 'native-base';
-import {StatusBar} from 'react-native'
+import {StatusBar, Alert} from 'react-native'
 import { Circle, AddIcon, ScrollView, Pressable, Modal, FormControl, Input, Radio} from 'native-base';
+// In a React Native application
+import Parse from "parse/react-native.js";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//Initializing the SDK. 
+Parse.setAsyncStorage(AsyncStorage);
+//You need to copy BOTH the the Application ID and the Javascript Key from: Dashboard->App Settings->Security & Keys 
+Parse.initialize('FOSsiQss4pqdZKSslWmrKi9mU7fVg7uAO6GLaBgp','VmNQh75FclmlYqQln9kMrGG6zAV1fYQS2YMcheHa');
+Parse.serverURL = 'https://parseapi.back4app.com/';
 
-export default function Home(props, { navigation }) {
-
+export default function Home(props, { route, navigation }) {
   const [showModal, setShowModal] = React.useState(false)
   const [showModal2, setShowModal2] = React.useState(false)
   const [showModal3, setShowModal3] = React.useState(false)
   const [showModal4, setShowModal4] = React.useState(false)
+  const [userInfo, setInfo] = React.useState(null)
   const [value, setValue] = React.useState("one")
+  const [amount, setAmount] = React.useState()
+  const [pStatus, setpStatus] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
+  const [onChangeValue, setOnChangeValue] = React.useState(9)
+  const [onChangeEndValue, setOnChangeEndValue] = React.useState(9)
+
+  const getCurrentUser = async function () {
+    const currentUser = await Parse.User.currentAsync();
+    if (currentUser !== null) {
+
+      const userInfo = {
+        email: currentUser.get('email'),
+        fname: currentUser.get('fname'),
+        uID: currentUser.id,
+        balance: currentUser.get('balance'),
+        loan_balance: currentUser.get('loan_balance'),
+        nextDate: currentUser.get('nextDate'),
+        nextAmount: currentUser.get('nextAmount'),
+      }
+
+      setInfo(userInfo)
+    }
+  };
+
+  const updateUser = async function() {
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+
+    try {
+      // Finds the user by its ID
+      let user = await query.get(userInfo.uID);
+      // Updates the data we want
+      let amnt = Number(userInfo.balance) + Number(amount)
+      console.log(amnt)
+      let samnt = amnt.toString()
+      console.log(samnt)
+
+      user.set('balance', samnt);
+      try {
+        // Saves the user with the updated data
+        let response = await user.save();
+        console.log('Updated user', response);
+        getCurrentUser()
 
 
+      } catch (error) {
+        Alert.alert('Error while updating user', error.message);
+
+      }
+    } catch (error) {
+      Alert.alert('Error while retrieving user', error.message);
+
+    }
+  }
+  
+
+
+  if(userInfo=== null){
+    getCurrentUser()
+    return (
+      <LoadingIndicator/>
+    )
+  }
+
+  function addMooney() {
+    setpStatus(true)
+    setShowModal(false)
+    console.log(pStatus)
+  }
+  function Pay() {
+    return (
+      <NativeBaseProvider>
+      <VStack style={{ flex: 1 }}>
+        <Paystack  
+          paystackKey="pk_test_783c3e34af0cc770226788d2511df5b281ea3dd4"
+          amount={amount}
+          billingEmail={userInfo.email}
+          activityIndicatorColor="green"
+          onCancel={(e) => {
+            setpStatus(false)
+          }}
+          onSuccess={(res) => {
+            updateUser()
+            getCurrentUser()
+            setpStatus(false)
+          }}
+          autoStart={true}
+        />
+      </VStack>
+      </NativeBaseProvider>
+    );
+  }
+
+
+if(!pStatus){
   return (
     <NativeBaseProvider>
     <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
@@ -22,7 +126,7 @@ export default function Home(props, { navigation }) {
     <HStack space={4} justifyContent='space-between' alignItems='center'>
     <VStack space={2}>
     <Text fontSize="sm" color='gray.500'>Good Morning,</Text>
-    <Heading>Joshua Praise</Heading>
+    <Heading>{userInfo.fname}</Heading>
     </VStack>
     <Pressable onPress={() => props.navigation.navigate('Settings')}>
     {({ isPressed }) => {
@@ -70,7 +174,7 @@ export default function Home(props, { navigation }) {
     <HStack space={4} justifyContent='space-between' alignItems='center'>
     <VStack space={2}>    
     <Text fontSize="xs" color='gray.300'>Account Balance</Text>
-    <Heading color='white'>$1,671,855</Heading>
+    <Heading color='white'>${Number(userInfo.balance).toLocaleString('en-US')}</Heading>
     </VStack>
     <Circle borderWidth={1} borderColor={'gray.400'} size={'sm'} bg='gray.100'>
     <AddIcon color='gray.600' size={5}/>
@@ -176,11 +280,11 @@ export default function Home(props, { navigation }) {
     />
     <VStack space={0}>    
     <Text fontSize="xs" color='gray.500'>Total Loan Balance</Text>
-    <Heading color='teal.500'>$47,000</Heading>
+    <Heading color='teal.500'>${userInfo.loan_balance}</Heading>
     <Text mt={2} fontSize="xs" color='gray.500'>Next Due Date</Text>
-    <Heading color='teal.500'>Nov 2, 2021</Heading>
+    <Heading color='teal.500'>{userInfo.nextDate}</Heading>
     <Text mt={2} fontSize="xs" color='gray.500'>Next Due Amount</Text>
-    <Heading color='teal.500'>$7,000</Heading>
+    <Heading color='teal.500'>${userInfo.nextAmount}</Heading>
     </VStack>
     </HStack>
     </Box>
@@ -198,7 +302,7 @@ export default function Home(props, { navigation }) {
           <Modal.Body>
             <FormControl>
               <FormControl.Label>Amount</FormControl.Label>
-              <Input keyboardType='numeric' placeholder='0.00' InputLeftElement={
+              <Input value={amount} onChangeText={setAmount} keyboardType='numeric' placeholder='0.00' InputLeftElement={
                 (
                   <Text ml={2}>$</Text>
                 )
@@ -217,9 +321,7 @@ export default function Home(props, { navigation }) {
                 Cancel
               </Button>
               <Button
-                onPress={() => {
-                  setShowModal(false)
-                }}
+                onPress={() => {addMooney()}}
               >
                 Proceed
               </Button>
@@ -234,7 +336,7 @@ export default function Home(props, { navigation }) {
           <Modal.Header>Request Loan</Modal.Header>
           <Modal.Body>
           <Text fontSize="sm" color='gray.500'>Available Credit</Text>
-          <Heading>$78,000</Heading>
+          <Heading>$22,200</Heading>
           <Divider my={2}/>
             <FormControl>
               <FormControl.Label>Amount</FormControl.Label>
@@ -252,13 +354,20 @@ export default function Home(props, { navigation }) {
         maxValue={12}
         step={1}
         p={1}
+
+        onChange={(v) => {
+          setOnChangeValue(Math.floor(v))
+        }}
+        onChangeEnd={(v) => {
+          v && setOnChangeEndValue(Math.floor(v))
+        }}
       >
         <Slider.Track>
           <Slider.FilledTrack />
         </Slider.Track>
         <Slider.Thumb />
       </Slider>
-      <Heading>9 Months</Heading>
+      <Heading>{onChangeValue} Months</Heading>
 
           </Modal.Body>
           <Modal.Footer>
@@ -369,4 +478,9 @@ export default function Home(props, { navigation }) {
 
     </NativeBaseProvider>
   );
+}else{return(
+  <Pay/>
+)}
+
+
 }

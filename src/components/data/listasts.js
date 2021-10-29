@@ -1,7 +1,6 @@
-import React from 'react';
-
 var AvailableStocks
-export default  AvailableStocks = [
+
+export default AvailableStocks = [
     {
       "symbol": "ORANW-NA",
       "companyName": "Oranjewoud NV",
