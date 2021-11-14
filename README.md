@@ -1,6 +1,8 @@
 # TroveChallenge
 https://youtu.be/vFvvVqdBVVQ
 
+http://imgur.com/a/qPUMMGT
+
 ## Design and approach for Trove challenge
 
 ### Notable Tools Used
